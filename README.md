@@ -1,17 +1,74 @@
 # 12-Lead ECG Classification & Pipeline
 
-This repository contains the deep learning training and evaluation pipeline for 12-lead ECG signal classification using ConvNeXt-Atto architectures.
+An end-to-end deep learning framework using ConvNeXt-Atto architectures for multi-domain 12-lead ECG signal classification.
 
-## 📁 Repository Structure
+---
+
+## 🔄 Pipeline Execution Flowchart
 
 ```text
-ECG_Project/
-├── train_combined.py                 # Main training script for combined ECG dataset
-├── train_and_evaluate_20pct.py       # Training and 20% validation pipeline
-├── evaluate_holdout.py               # Evaluation script for holdout test sets
-├── best_convnext_atto_combined.pth   # Pre-trained model weights (Combined model)
-├── best_convnext_atto_peak.pth       # Pre-trained model weights (Peak/best validation)
-├── ECG_Cleaned_Dataset/              # Preprocessed & cleaned ECG signal records
-├── ECG_Combined_Dataset/             # Unified combined dataset splits
-├── Holdout_Test_Set/                 # Dedicated holdout evaluation set
-└── Mendeley_20_Holdout/              # Mendeley 20% holdout test dataset
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       12-Lead ECG Processing Pipeline                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+ [ STEP 1: Baseline Training ]
+ ┌──────────────────────┐      ┌──────────────────────┐
+ │ ECG_Cleaned_Dataset  │      │ Mendeley_20_Holdout  │
+ └──────────┬───────────┘      └──────────┬───────────┘
+            │                             │
+            └──────────────┬──────────────┘
+                           │
+                           ▼
+         ┌───────────────────────────────────┐
+         │   train_and_evaluate_20pct.py     │
+         │   (80% Train / 20% Val Split)     │
+         └─────────────────┬─────────────────┘
+                           │
+                           ▼
+         ┌───────────────────────────────────┐
+         │    best_convnext_atto_peak.pth    │
+         └─────────────────┬─────────────────┘
+                           │
+                           │ (Foundation Baseline Weights)
+                           ▼
+ [ STEP 2: Multi-Domain Fine-Tuning ]
+ ┌──────────────────────┐  │
+ │ ECG_Combined_Dataset │  │
+ │ (PTB-XL, Georgia,    │  │
+ │  & Chapman signals)  │  │
+ └──────────┬───────────┘  │
+            │              │
+            └──────┬───────┘
+                   │
+                   ▼
+         ┌───────────────────────────────────┐
+         │        train_combined.py          │
+         │  (Multi-Domain Dataset Training)  │
+         └─────────────────┬─────────────────┘
+                           │
+                           ▼
+         ┌───────────────────────────────────┐
+         │  best_convnext_atto_combined.pth  │
+         └─────────────────┬─────────────────┘
+                           │
+                           │ (Final Combined Checkpoint)
+                           ▼
+ [ STEP 3: Holdout Evaluation ]
+ ┌──────────────────────┐  │
+ │  Holdout_Test_Set    │  │
+ │  (Unseen Raw Set)    │  │
+ └──────────┬───────────┘  │
+            │              │
+            └──────┬───────┘
+                   │
+                   ▼
+         ┌───────────────────────────────────┐
+         │        evaluate_holdout.py        │
+         │     (7-View TTA Evaluation)       │
+         └─────────────────┬─────────────────┘
+                           │
+                           ▼
+         ┌───────────────────────────────────┐
+         │  • Official Test Accuracy         │
+         │  • Confusion Matrix Plot          │
+         └───────────────────────────────────┘
