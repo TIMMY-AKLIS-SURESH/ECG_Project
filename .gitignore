@@ -1,0 +1,24 @@
+# Ignore everything in the folder by default
+*
+
+# Allow .gitignore itself
+!.gitignore
+
+# Whitelist your 3 Python scripts
+!train_combined.py
+!train_and_evaluate_20pct.py
+!evaluate_holdout.py
+
+# Whitelist your 2 model weight files
+!best_convnext_atto_combined.pth
+!best_convnext_atto_peak.pth
+
+# Whitelist your 4 datasets/folders
+!Holdout_Test_Set/
+!Holdout_Test_Set/**
+!Mendeley_20_Holdout/
+!Mendeley_20_Holdout/**
+!ECG_Combined_Dataset/
+!ECG_Combined_Dataset/**
+!ECG_Cleaned_Dataset/
+!ECG_Cleaned_Dataset/**
